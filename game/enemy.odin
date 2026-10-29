@@ -20,12 +20,12 @@ Enemy :: struct {
 }
 
 create_enemy :: proc(pos, vel: [2]f32, fire_rate, bullet_speed: f32) -> Enemy {
-	return Enemy {
-		texture = graphics.load_texture(ENEMY_TEXTURE),
-		pos = pos,
-		vel = vel,
-		active = true,
-		fire_rate = fire_rate,
+	return Enemy{
+		texture      = graphics.load_texture(ENEMY_TEXTURE),
+		pos          = pos,
+		vel          = vel,
+		active       = true,
+		fire_rate    = fire_rate,
 		bullet_speed = bullet_speed,
 	}
 }

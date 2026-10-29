@@ -16,29 +16,23 @@ Bullet :: struct {
 
 
 make_bullet :: proc(pos, vel: [2]f32) -> Bullet {
-	return Bullet {
+	return Bullet{
 		texture = graphics.load_texture(BULLET_TEXTURE),
-		pos = pos,
-		vel = vel,
-		active = true,
+		pos     = pos,
+		vel     = vel,
+		active  = true,
 	}
 }
 
 
-update_bullet :: proc(bullets: ^[dynamic]Bullet) {
-	for i := len(bullets) - 1; i >= 0; i -= 1 {
-		if !bullets[i].active {continue}
-		bullets[i].pos += bullets[i].vel * rl.GetFrameTime()
-
-		if off_screen(bullets[i].pos) {
-			bullets[i].active = false
-		}
-		if !bullets[i].active {
-			unordered_remove(bullets, i)
-		}
+update_bullet :: proc(b: ^Bullet) {
+	if !b.active {return}
+	b.pos += b.vel * rl.GetFrameTime()
+	if off_screen(b.pos) {
+		b.active = false
 	}
-
 }
+
 
 
 bullet_collision :: proc(s: ^GameState) {
@@ -69,10 +63,7 @@ bullet_collision :: proc(s: ^GameState) {
 }
 
 
-draw_bullet :: proc(bullets: ^[dynamic]Bullet) {
-
-	for bullet in bullets {
-		if !bullet.active {continue}
-		rl.DrawTextureV(bullet.texture, bullet.pos, rl.WHITE)
-	}
+draw_bullet :: proc(b: Bullet) {
+	if !b.active {return}
+	rl.DrawTextureV(b.texture, b.pos, rl.WHITE)
 }

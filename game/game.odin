@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import "core:fmt"
 
 import "../core"
+import "../graphics"
 
 
 Screen :: enum {
@@ -22,19 +23,25 @@ GameState :: struct {
 	enemies:       [dynamic]Enemy,
 	spawner:       Spawner,
 	score:         int,
+	assets:        graphics.AssetStore,
 }
 
 
 init_game :: proc() -> GameState {
-	return GameState {
-		screen = .MENU,
-		player = create_player(),
+	return GameState{
+		screen  = .MENU,
+		player  = create_player(),
 		spawner = create_spawner(),
-		score = 0,
+		score   = 0,
+		assets  = graphics.load_all(),
 	}
 }
-update_game :: proc(s: ^GameState) {
 
+shutdown_game :: proc(s: ^GameState) {
+	graphics.unload_all(&s.assets)
+}
+
+update_game :: proc(s: ^GameState) {
 	inputs := core.Get_Input()
 
 	switch s.screen {
@@ -44,13 +51,13 @@ update_game :: proc(s: ^GameState) {
 		}
 	case .PLAYING:
 		update_player(&s.player, inputs, &s.bullets)
-		update_spawner(&s.spawner, &s.enemies)
-		update_bullet(&s.bullets)
-		update_bullet(&s.enemy_bullets)
+			update_spawner(&s.spawner, &s.enemies)
+		update_pool(&s.bullets, update_bullet)
+		update_pool(&s.enemy_bullets, update_bullet)
 
 		bullet_collision(s)
 
-		//same logic for enemies i guess
+		// same logic for enemies i guess
 		for i := len(s.enemies) - 1; i >= 0; i -= 1 {
 			update_enemy(&s.enemies[i], &s.enemy_bullets, s.player.position)
 			if !s.enemies[i].active {
@@ -67,42 +74,37 @@ update_game :: proc(s: ^GameState) {
 			s^ = init_game()
 		}
 	}
-
 }
 
 draw_game :: proc(s: ^GameState) {
 	rl.BeginDrawing()
-	// rl.ClearBackground({160, 200, 255, 255})
-	rl.ClearBackground({0, 0, 0, 0})
+	rl.ClearBackground(BG_COLOR)
 
 	switch s.screen {
 	case .MENU:
-		rl.DrawText("press enter to  start game", 0, 0, 16, rl.WHITE)
+		rl.DrawText("PRESS ENTER TO START", 150, 400, 20, TEXT_COLOR)
 	case .PLAYING:
-		draw_player(s.player)
-		draw_bullet(&s.bullets)
-		draw_bullet(&s.enemy_bullets)
+			draw_player(s.player)
+		draw_pool(s.bullets[:], draw_bullet)
+		draw_pool(s.enemy_bullets[:], draw_bullet)
 
 		for enemy in s.enemies {
 			draw_enemy(enemy)
 		}
-		rl.DrawText(fmt.ctprintf("Score: %d", s.score), 0, 0, 16, rl.WHITE)
+		rl.DrawText(fmt.ctprintf("Score: %d", s.score), 10, 10, 20, TEXT_COLOR)
 	case .GAME_OVER:
 		draw_player(s.player)
-		draw_bullet(&s.bullets)
-		draw_bullet(&s.enemy_bullets)
+		draw_pool(s.bullets[:], draw_bullet)
+		draw_pool(s.enemy_bullets[:], draw_bullet)
 
 		for enemy in s.enemies {
 			draw_enemy(enemy)
 		}
 
-		rl.DrawText("Gave Over press r to restart", 0, 0, 16, rl.WHITE)
-	// overlay rect
-	// "GAME OVER" centered
-	// "Score: N" centered
-	// "Press R to restart" centered
+		rl.DrawText("GAME OVER", 220, 400, 40, TEXT_COLOR_RED)
+		rl.DrawText(fmt.ctprintf("Final Score: %d", s.score), 200, 460, 25, TEXT_COLOR)
+		rl.DrawText("PRESS R TO RESTART", 190, 520, 20, TEXT_COLOR)
 	}
-
 
 	rl.EndDrawing()
 }

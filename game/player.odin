@@ -20,12 +20,12 @@ Player :: struct {
 
 
 create_player :: proc() -> Player {
-	return Player {
-		texture = graphics.load_texture(PLAYER_TEXTURE),
-		position = [2]f32{f32(rl.GetScreenWidth()) / 2, f32(rl.GetScreenHeight() / 2)},
-		fire_rate = .25,
+	return Player{
+		texture      = graphics.load_texture(PLAYER_TEXTURE),
+		position     = [2]f32{f32(rl.GetScreenWidth()) / 2, f32(rl.GetScreenHeight()) / 2},
+		fire_rate    = .25,
 		bullet_speed = 600,
-		active = true,
+		active       = true,
 	}
 }
 
