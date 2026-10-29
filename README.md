@@ -24,7 +24,7 @@ assets/texture/
 
 - [x] Phase 1 — Foundation: movement, boundaries, code structure
 - [x] Phase 2 — Combat: enemies, AI, bullets, pools, spawner, collision, score
-- [ ] Phase 3 — Game loop: states, restart, UI
+- [x] Phase 3 — Game loop: states, restart, UI
 - [ ] Phase 4 — Assets: textures, sounds, asset manager
 
 ### After Phase 4
